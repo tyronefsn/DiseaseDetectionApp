@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#337536"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:id="@+id/rel1"
+        android:layout_width="160dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true"
+        android:elevation="2dp">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/take_picture"
+            android:textSize="17sp"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="16dp"
+            android:textColor="@color/white"/>
+
+        <LinearLayout
+            android:layout_marginBottom="8dp"
+            android:orientation="horizontal"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/button"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_marginStart="8dp"
+                android:elevation="4dp"
+                android:padding="8dp"
+                android:stateListAnimator="@null"
+                android:scaleType="centerInside"
+                android:adjustViewBounds="true"
+                android:backgroundTint="#CADA72"
+                android:contentDescription="@string/button_description" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/cardView"
+        android:layout_width="match_parent"
+        android:layout_height="280dp"
+        android:orientation="vertical"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:background="@drawable/login_white_background">
+
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="270dp"
+            android:id="@+id/imageView"
+            android:scaleType="fitCenter"
+            android:src="@drawable/scan_leaf"
+            android:contentDescription="@string/todo" />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/cardView"
+        android:layout_marginTop="-2dp">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/demoText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:justificationMode="inter_word"
+                android:lineSpacingMultiplier="0.9"
+                android:text="@string/first_import_your_image_using_the_camera"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:visibility="gone"
+                tools:targetApi="o" />
+
+            <ImageView
+                android:id="@+id/demoArrow"
+                android:layout_width="170dp"
+                android:layout_height="180dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginStart="24dp"
+                android:rotation="-20"
+                android:visibility="gone"
+                app:tint="@color/white" />
+
+            <TextView
+                android:id="@+id/classified"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="16dp"
+                android:includeFontPadding="false"
+                android:text="@string/classification"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="19sp" />
+
+            <TextView
+                android:id="@+id/result"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:includeFontPadding="false"
+                android:letterSpacing="0.06"
+                android:text=""
+                android:textAlignment="center"
+                android:textAllCaps="true"
+                android:textColor="#FFEB3B"
+                android:textSize="24sp"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:contentDescription="@string/result_description" />
+
+            <TextView
+                android:id="@+id/confidenceLevel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:letterSpacing="0.03"
+                android:text=""
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/click_here"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:letterSpacing="0.03"
+                android:text="@string/click_on_the_result_to_know_more"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
+
+
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+
+</RelativeLayout>

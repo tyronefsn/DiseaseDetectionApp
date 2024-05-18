@@ -1,0 +1,7 @@
+ext {
+    libs = [
+            tensorflow_lite_support: "org.tensorflow:tensorflow-lite-support:0.1.0-rc1",
+            tensorflow_lite_metadata: "org.tensorflow:tensorflow-lite-metadata:0.1.0-rc1",
+            // Other dependencies can be added here if needed
+    ]
+}
