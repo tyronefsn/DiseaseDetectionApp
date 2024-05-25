@@ -5,7 +5,7 @@
         android:id="@+id/set_values"
         android:icon="@drawable/baseline_add_alarm_24"/>
     <item android:title="Home"
-        android:id="@id/home"
+        android:id="@+id/home"
         android:icon="@drawable/baseline_home_24"/>
     <item android:title="Detect"
         android:id="@+id/detect"

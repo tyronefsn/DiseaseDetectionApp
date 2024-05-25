@@ -40,7 +40,7 @@ public class CameraPage extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.camera_main);
 
         result = findViewById(R.id.result);
         imageView = findViewById(R.id.imageView);
