@@ -7,7 +7,6 @@
         android:required="false" />
 
     <uses-permission android:name="android.permission.CAMERA" />
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
@@ -21,9 +20,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DiseaseDetectionApp"
         tools:targetApi="31">
-
         <activity
             android:name=".MainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".CameraPage"
             android:exported="true"
             android:theme="@style/Theme.DiseaseDetectionApp">
             <intent-filter>
