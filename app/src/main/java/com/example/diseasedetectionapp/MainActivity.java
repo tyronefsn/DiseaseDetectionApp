@@ -24,11 +24,6 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         EdgeToEdge.enable(this);
         setContentView(binding.getRoot());
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
         binding.bottomNavigationView.setSelectedItemId(R.id.home);
         getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new HomeFragment()).commit();
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
@@ -40,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
                 selectedFragment = new SetFragment();
             } else if (itemId ==  R.id.detect) {
                 selectedFragment = new DetectFragment();
+            } else if (itemId == R.id.profile) {
+                selectedFragment = new ProfileFragment();
             }
 
             if (selectedFragment != null) {
