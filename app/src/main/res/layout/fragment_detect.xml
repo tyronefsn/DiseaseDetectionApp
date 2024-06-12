@@ -89,7 +89,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textView6">
 
             <Button
-                android:id="@+id/button2"
+                android:id="@+id/cameraButton"
                 android:layout_width="96dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -100,7 +100,7 @@
                 android:layout_height="0dp" />
 
             <Button
-                android:id="@+id/button3"
+                android:id="@+id/galleryButton"
                 android:layout_width="wrap_content"
                 android:layout_height="54dp"
                 android:layout_weight="1"
@@ -108,7 +108,7 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/button4"
+            android:id="@+id/historyButton"
             android:layout_width="140.6dp"
             android:layout_height="54dp"
             android:layout_marginTop="32dp"

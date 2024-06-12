@@ -1,12 +1,23 @@
 package com.example.diseasedetectionapp;
 
+import static androidx.core.content.ContextCompat.checkSelfPermission;
+
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.media.ThumbnailUtils;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -53,12 +64,35 @@ public class DetectFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        
+        View view = inflater.inflate(R.layout.fragment_detect, container, false);
+
+        Button cameraButton = view.findViewById(R.id.cameraButton);
+        Button galleryButton = view.findViewById(R.id.galleryButton);
+
+        cameraButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
+                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(cameraIntent, 1);
+                } else {
+                    // Request camera permission if not granted
+                    requestPermissions(new String[]{Manifest.permission.CAMERA}, 100);
+                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(cameraIntent, 1);
+                }
+            }
+        });
+
+        return view;
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_detect, container, false);
+//        return inflater.inflate(R.layout.fragment_detect, container, false);
     }
 }
