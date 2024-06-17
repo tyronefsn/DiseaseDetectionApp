@@ -1,12 +1,16 @@
 package com.example.diseasedetectionapp;
 
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
 import static androidx.core.content.ContextCompat.checkSelfPermission;
 
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.ThumbnailUtils;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -18,6 +22,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.example.diseasedetectionapp.ml.DiseaseDetection;
+
+import org.tensorflow.lite.DataType;
+import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -90,9 +106,128 @@ public class DetectFragment extends Fragment {
                 }
             }
         });
+        galleryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 99);
+                }
+
+                Intent galleryIntent = new Intent();
+                galleryIntent.setType("image/*");
+                startActivityForResult(Intent.createChooser(galleryIntent, "Select Picture"), 2);
+
+
+            }
+        });
 
         return view;
         // Inflate the layout for this fragment
 //        return inflater.inflate(R.layout.fragment_detect, container, false);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Bitmap image = null;
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+           image = (Bitmap) data.getExtras().get("data");
+
+        }
+        else if (requestCode == 2 && resultCode == RESULT_OK) {
+            try {
+                Uri uri = data.getData();
+                InputStream imageStream = getActivity().getContentResolver().openInputStream(uri);
+                image = BitmapFactory.decodeStream(imageStream);
+            } catch (IOException e) {
+//                Handle Exception
+            }
+        }
+
+        if (resultCode == RESULT_OK) {
+            ImageView imageView = getView().findViewById(R.id.imageView5);
+            int dimension = Math.min(image.getWidth(), image.getHeight());
+            image = ThumbnailUtils.extractThumbnail(image, dimension, dimension);
+            imageView.setImageBitmap(image);
+            classifyImage(image);
+        }
+
+    }
+
+    private void classifyImage(Bitmap image) {
+        try {
+            int imageSize = 224;
+            float threshold = 0.6f;
+            DiseaseDetection model = DiseaseDetection.newInstance(getActivity().getApplicationContext());
+            // Creates inputs for reference
+            TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 224, 224, 3}, DataType.FLOAT32);
+            ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4*imageSize*imageSize*3);
+            byteBuffer.order(ByteOrder.nativeOrder());
+            // resize input image
+            image = Bitmap.createScaledBitmap(image, imageSize, imageSize, true);
+            int [] intValues = new int[imageSize*imageSize];
+            image.getPixels(intValues,0,image.getWidth(),0,0,image.getWidth(),image.getHeight());
+            int pixel = 0;
+            for(int i = 0; i < imageSize; i++){
+                for(int j = 0; j < imageSize; j++){
+                    int val = intValues[pixel++]; // RGB
+                    byteBuffer.putFloat(((val >> 16) & 0xFF)*(1.f/255.f));
+                    byteBuffer.putFloat(((val >> 8) & 0xFF)*(1.f/255.f));
+                    byteBuffer.putFloat((val & 0xFF)*(1.f/255.f));
+                }
+            }
+
+            inputFeature0.loadBuffer(byteBuffer);
+
+            // Runs model inference and gets result.
+            DiseaseDetection.Outputs outputs = model.process(inputFeature0);
+            TensorBuffer outputFeature0 = outputs.getOutputFeature0AsTensorBuffer();
+
+            float[] confidences = outputFeature0.getFloatArray();
+            int maxPos = 0;
+            float maxConfidence = 0;
+            for(int i = 0; i < confidences.length; i++){
+                if(confidences[i] > maxConfidence){
+                    maxConfidence = confidences[i];
+                    maxPos = i;
+                }
+            }
+
+            // Define the classes
+            String[] classes = {"Healthy Rice Crop", "Rice Bacterial Leaf Blight Disease", "Rice Leaf Brown Spot Disease", "Rice Leaf Scald Disease", "Rice Neck Blast Disease", "Rice Hispa Disease", "Rice Tungro Disease", "Rice False Smut Disease", "Rice Stem Rot"};
+
+            // Display confidence level
+            TextView confidenceTextView = getView().findViewById(R.id.confidenceLevelText);
+            String confidenceText = "Confidence Level: " + String.format("%.2f", maxConfidence * 100) + "%";
+            confidenceTextView.setText(confidenceText);
+            TextView result = getView().findViewById(R.id.resultText);
+
+            if (maxConfidence < threshold) {
+                // If confidence is below threshold, display message
+                result.setText(R.string.image_is_not_recognized);
+            } else {
+                // Check if predicted class index is within bounds
+                if (maxPos >= 0 && maxPos < classes.length) {
+                    // Display the predicted class
+                    result.setText(classes[maxPos]);
+                } else {
+                    // If predicted class index is out of bounds, display unknown class
+                    result.setText("Unknown");
+                }
+            }
+
+            result.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(new Intent(Intent.ACTION_VIEW,
+                            Uri.parse("https://www.google.com/search?q="+result.getText())));
+                }
+            });
+
+            model.close();
+
+        } catch (IOException e) {
+//            catch error
+        }
     }
 }
