@@ -4,9 +4,12 @@
     <item android:title="Home"
         android:id="@+id/home"
         android:icon="@drawable/baseline_home_24"/>
-    <item android:title="Set Values"
-        android:id="@+id/set_values"
+    <item android:title="Data"
+        android:id="@+id/data"
         android:icon="@drawable/baseline_bar_chart_24"/>
+    <item android:title="Set"
+        android:id="@+id/set_values"
+        android:icon="@drawable/baseline_add_24" />
     <item android:title="Detect"
         android:id="@+id/detect"
         android:icon="@drawable/baseline_document_scanner_24"/>

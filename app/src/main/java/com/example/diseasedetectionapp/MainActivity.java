@@ -31,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
             int itemId = item.getItemId();
             if (itemId == R.id.home) {
                 selectedFragment = new HomeFragment();
+            } else if (itemId == R.id.data) {
+                selectedFragment = new DataFragment();
             } else if (itemId == R.id.set_values) {
                 selectedFragment = new SetFragment();
             } else if (itemId ==  R.id.detect) {
