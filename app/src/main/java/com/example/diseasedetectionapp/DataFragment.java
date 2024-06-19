@@ -7,13 +7,20 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import org.json.JSONObject;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link DataFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class DataFragment extends Fragment {
+public class DataFragment extends Fragment implements GetJsonDataCallback {
+    private TextView waterLevelText;
+    private TextView nitrogenText;
+    private TextView phosphorusText;
+    private TextView potassiumText;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -59,6 +66,33 @@ public class DataFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_data, container, false);
+        View view = inflater.inflate(R.layout.fragment_data, container, false);
+
+        waterLevelText = view.findViewById(R.id.waterStatus);
+        nitrogenText = view.findViewById(R.id.nitrogenStatus);
+        phosphorusText = view.findViewById(R.id.phosphorusStatus);
+        potassiumText = view.findViewById(R.id.potassiumStatus);
+        new GetJsonDataTask(this).execute();
+
+        return view;
+    }
+
+    @Override
+    public void onJsonDataReceived(JSONObject jsonObject) {
+        System.out.println(jsonObject.toString());
+        try {
+            waterLevelText.setText(jsonObject.getString("v1") + " cm");
+            nitrogenText.setText(jsonObject.getString("v3") + " mg/ha");
+            phosphorusText.setText(jsonObject.getString("v4") + " mg/ha");
+            potassiumText.setText(jsonObject.getString("v5") + " mg/ha");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void onError(String error) {
+        System.out.println(error);
     }
 }

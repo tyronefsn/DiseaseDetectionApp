@@ -25,30 +25,36 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
+
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:textColor="#0D522C"
                 android:text="Input Data"
                 android:textSize="17sp"
                 android:textStyle="bold" />
         </com.google.android.material.appbar.MaterialToolbar>
 
         <TextView
+
             android:id="@+id/textView7"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="26dp"
             android:layout_marginTop="36dp"
             android:text="Starting Date:"
+            android:textColor="#0D522C"
             android:textSize="19sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/materialToolbar3" />
 
         <TextView
+
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
+            android:textColor="#0D522C"
+            android:layout_marginStart="26dp"
             android:text="(Araw ng pagtatanim ng mga punla)"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView7" />
@@ -59,319 +65,403 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="36dp"
             android:layout_marginEnd="24dp"
+            app:chipBackgroundColor="#667ED957"
             android:text="6/03/2024"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/materialToolbar3" />
 
         <TextView
+
             android:id="@+id/textView24"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="132dp"
             android:text="Recommended AWD Water Management"
-            android:textSize="12sp"
+            android:textSize="18sp"
             android:textStyle="bold"
+            android:textColor="#0D522C"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.496"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/materialToolbar3" />
 
         <TableLayout
+            android:id="@+id/tableLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="64dp"
             android:layout_marginTop="20dp"
+            android:layout_marginEnd="64dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView24">
 
-            <TableRow>
+            <TableRow android:layout_marginBottom="5dp">
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
                     android:text="Vegetative Growth Stage"
-                    android:textSize="12sp"
+                    android:textSize="15sp"
                     android:textStyle="bold" />
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:text="="
-                    android:textSize="12sp"
+                    android:textSize="15sp"
                     android:textStyle="bold" />
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:text="60 days"
-                    android:textSize="12sp"
+                    android:textSize="15sp"
                     android:textStyle="bold" />
             </TableRow>
 
-            <TableRow>
+            <TableRow android:layout_marginBottom="5dp">
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
                     android:text="STANDING WATER"
-                    android:textSize="9sp" />
+                    android:textSize="12sp" />
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:text="="
-                    android:textSize="9sp" />
+                    android:textSize="12sp" />
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:text="10 days"
-                    android:textSize="9sp" />
+                    android:textSize="12sp" />
 
             </TableRow>
 
-            <TableRow>
+            <TableRow android:layout_marginBottom="5dp">
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
                     android:text="SAFE AWD"
-                    android:textSize="9sp" />
+                    android:textSize="12sp" />
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:text="="
-                    android:textSize="9sp" />
+                    android:textSize="12sp" />
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:text="50 days"
-                    android:textSize="9sp" />
+                    android:textSize="12sp" />
             </TableRow>
 
-            <TableRow>
+            <TableRow android:layout_marginBottom="5dp">
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
                     android:text="Reproductive Stage"
-                    android:textSize="12sp"
+                    android:textSize="15sp"
                     android:textStyle="bold" />
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:text="="
-                    android:textSize="12sp"
+                    android:textSize="15sp"
                     android:textStyle="bold" />
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:text="30 days"
-                    android:textSize="12sp"
+                    android:textSize="15sp"
                     android:textStyle="bold" />
             </TableRow>
 
-            <TableRow>
+            <TableRow android:layout_marginBottom="5dp">
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
                     android:text="STANDING WATER"
-                    android:textSize="9sp" />
+                    android:textSize="12sp" />
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:text="="
-                    android:textSize="9sp" />
+                    android:textSize="12sp" />
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:text="10 days"
-                    android:textSize="9sp" />
+                    android:textSize="12sp" />
 
             </TableRow>
 
-            <TableRow>
+            <TableRow android:layout_marginBottom="5dp">
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
                     android:text="SAFE AWD"
-                    android:textSize="9sp" />
+                    android:textSize="12sp" />
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:text="="
-                    android:textSize="9sp" />
+                    android:textSize="12sp" />
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:text="17 days"
-                    android:textSize="9sp" />
+                    android:textSize="12sp" />
             </TableRow>
 
-            <TableRow>
+            <TableRow android:layout_marginBottom="5dp">
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
                     android:text="STANDING WATER"
-                    android:textSize="9sp" />
+                    android:textSize="12sp" />
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:text="="
-                    android:textSize="9sp" />
+                    android:textSize="12sp" />
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:text="3 days"
-                    android:textSize="9sp" />
+                    android:textSize="12sp" />
             </TableRow>
 
-            <TableRow>
+            <TableRow android:layout_marginBottom="5dp">
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
                     android:text="Ripening Stage"
-                    android:textSize="12sp"
+                    android:textSize="15sp"
                     android:textStyle="bold" />
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:text="="
-                    android:textSize="12sp"
+                    android:textSize="15sp"
                     android:textStyle="bold" />
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:text="30 days"
-                    android:textSize="12sp"
+                    android:textSize="15sp"
                     android:textStyle="bold" />
             </TableRow>
 
-            <TableRow>
+            <TableRow android:layout_marginBottom="5dp">
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
                     android:text="STANDING WATER"
-                    android:textSize="9sp" />
+                    android:textSize="12sp" />
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:text="="
-                    android:textSize="9sp" />
+                    android:textSize="12sp" />
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:text="3 days"
-                    android:textSize="9sp" />
+                    android:textSize="12sp" />
 
             </TableRow>
 
-            <TableRow>
+            <TableRow android:layout_marginBottom="5dp">
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
                     android:text="SAFE AWD"
-                    android:textSize="9sp" />
+                    android:textSize="12sp" />
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:text="="
-                    android:textSize="9sp" />
+                    android:textSize="12sp" />
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:text="12 days"
-                    android:textSize="9sp" />
+                    android:textSize="12sp" />
             </TableRow>
 
-            <TableRow>
+            <TableRow android:layout_marginBottom="5dp">
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
                     android:text="TERMINAL DRAINAGE"
-                    android:textSize="9sp" />
+                    android:textSize="12sp" />
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:text="="
-                    android:textSize="9sp" />
+                    android:textSize="12sp" />
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
                     android:text="15 days"
-                    android:textSize="9sp" />
+                    android:textSize="12sp" />
             </TableRow>
 
-            <TableRow>
+            <TableRow android:layout_marginBottom="5dp">
 
                 <TextView
+                    android:textColor="#0D522C"
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
                     android:text="Harvesting"
-                    android:textSize="12sp"
+                    android:textSize="15sp"
                     android:textStyle="bold" />
             </TableRow>
 
         </TableLayout>
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="64dp"
+            android:layout_marginTop="56dp"
+            android:text="Customize"
+            android:textColor="#0D522C"
+            android:backgroundTint="#7ed597"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tableLayout" />
+
+        <Button
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="56dp"
+            android:backgroundTint="#2E6B15"
+            android:layout_marginEnd="64dp"
+            android:text="Submit"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tableLayout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
