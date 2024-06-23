@@ -5,6 +5,8 @@ import static android.app.Activity.RESULT_OK;
 import static androidx.core.content.ContextCompat.checkSelfPermission;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -13,17 +15,21 @@ import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.diseasedetectionapp.ml.DiseaseDetection;
 
@@ -34,6 +40,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.security.Permission;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -41,7 +48,7 @@ import java.nio.ByteOrder;
  * create an instance of this fragment.
  */
 public class DetectFragment extends Fragment {
-
+    final static int CAMERA_REQUEST_CODE = 11;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -83,26 +90,26 @@ public class DetectFragment extends Fragment {
 
     }
 
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         
         View view = inflater.inflate(R.layout.fragment_detect, container, false);
-
         Button cameraButton = view.findViewById(R.id.cameraButton);
         Button galleryButton = view.findViewById(R.id.galleryButton);
 
         cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                while (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions(new String[]{Manifest.permission.CAMERA}, 100);
+                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(cameraIntent, 1);
+                } else {
+                    requestPermissions(new String[]{Manifest.permission.CAMERA},  CAMERA_REQUEST_CODE);
                 }
 
 
-                // Request camera permission if not granted
-                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(cameraIntent, 1);
 
             }
         });
@@ -124,6 +131,37 @@ public class DetectFragment extends Fragment {
         return view;
         // Inflate the layout for this fragment
 //        return inflater.inflate(R.layout.fragment_detect, container, false);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == CAMERA_REQUEST_CODE) {
+            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(cameraIntent, 1);
+            } else if(!ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.CAMERA)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setMessage("This feature is unavailable because this feature requires permission that you have denied. Please allow Camera Permission from settings to proceed further")
+                        .setTitle("Permission Required")
+                        .setCancelable(false)
+                        .setNegativeButton("Cancel", ((dialog, which) -> dialog.dismiss()))
+                        .setPositiveButton("Settings", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                Uri uri = Uri.fromParts("package", getActivity().getPackageName(), null);
+                                intent.setData(uri);
+                                startActivity(intent);
+
+                                dialog.dismiss();
+                            }
+                        });
+                builder.show();
+            } else {
+                requestPermissions(new String[]{Manifest.permission.CAMERA},  CAMERA_REQUEST_CODE);
+            }
+        }
     }
 
     @Override

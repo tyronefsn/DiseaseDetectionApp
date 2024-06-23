@@ -1,5 +1,19 @@
 package com.example.diseasedetectionapp;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import static com.example.diseasedetectionapp.MainActivity.KEY_IS_ONGOING;
+import static com.example.diseasedetectionapp.MainActivity.KEY_REPASWD;
+import static com.example.diseasedetectionapp.MainActivity.KEY_REPSTANDINGWATER;
+import static com.example.diseasedetectionapp.MainActivity.KEY_REPSTANDINGWATER1;
+import static com.example.diseasedetectionapp.MainActivity.KEY_RIPASWD;
+import static com.example.diseasedetectionapp.MainActivity.KEY_RIPSTANDINGWATER;
+import static com.example.diseasedetectionapp.MainActivity.KEY_RIPTERMINALDRAINAGE;
+import static com.example.diseasedetectionapp.MainActivity.KEY_VEGAWD;
+import static com.example.diseasedetectionapp.MainActivity.KEY_VEGSTANDINGWATER;
+
+import android.app.DatePickerDialog;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -10,9 +24,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TableRow;
 import android.widget.TextView;
+
+import com.google.android.material.chip.Chip;
+
+import java.util.Calendar;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,6 +48,9 @@ public class SetFragment extends Fragment {
     private TextView vegGrowthStage;
     private TextView repStage;
     private TextView ripStage;
+    private Chip chip;
+    private Button submit;
+    private SharedPreferences sharedPreferences;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -68,6 +90,7 @@ public class SetFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        NotificationHelper.createNotificationChannel(getContext());
     }
 
     @Override
@@ -75,6 +98,7 @@ public class SetFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_set, container, false);
+        sharedPreferences = getActivity().getSharedPreferences("DD_APP", MODE_PRIVATE);
 
         customizeButton = view.findViewById(R.id.customizeButton);
         submitButton = view.findViewById(R.id.submitButton);
@@ -90,6 +114,35 @@ public class SetFragment extends Fragment {
         vegGrowthStage = view.findViewById(R.id.vegGrowthStage);
         repStage = view.findViewById(R.id.repStage);
         ripStage = view.findViewById(R.id.ripStage);
+        chip = view.findViewById(R.id.chip);
+        chip.setText(getCurDate());
+        submitButton = view.findViewById(R.id.submitButton);
+
+        chip.setOnClickListener(v-> showDatePickerDialog());
+
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                
+                // write on shared preferences
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean(KEY_IS_ONGOING, true);
+                editor.putInt(KEY_VEGSTANDINGWATER, Integer.parseInt(editTexts[0].getText().toString()));
+                editor.putInt(KEY_VEGAWD, Integer.parseInt(editTexts[1].getText().toString()));
+                editor.putInt(KEY_REPSTANDINGWATER, Integer.parseInt(editTexts[2].getText().toString()));
+                editor.putInt(KEY_REPASWD, Integer.parseInt(editTexts[3].getText().toString()));
+                editor.putInt(KEY_REPSTANDINGWATER1, Integer.parseInt(editTexts[4].getText().toString()));
+                editor.putInt(KEY_RIPSTANDINGWATER, Integer.parseInt(editTexts[5].getText().toString()));
+                editor.putInt(KEY_RIPASWD, Integer.parseInt(editTexts[6].getText().toString()));
+                editor.putInt(KEY_RIPTERMINALDRAINAGE, Integer.parseInt(editTexts[7].getText().toString()));
+                editor.apply();
+
+                // send push notification
+                NotificationHelper.sendNotification(container.getContext(), "AWD Stage Started", "Vegetative Growth Stage - STANDING WATER ay simula na ngayong araw. Panatilihing HIGH ang water status sa loob ng sampung araw (10 days).");
+
+                // schedule daily notifications
+            }
+        });
         // handle customize button
         customizeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -160,5 +213,30 @@ public class SetFragment extends Fragment {
         }
 
         return res;
+    }
+
+    private String getCurDate() {
+        final Calendar calendar = Calendar.getInstance();
+
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        return (month+1) + "/" + day + "/" + year;
+    }
+    private void showDatePickerDialog() {
+        final Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                getContext(),
+                (view, year1, month1, dayOfMonth) -> {
+                    String selectedDate = (month1+1) + "/" + dayOfMonth + "/" + year1;
+                    chip.setText(selectedDate);
+                },
+                year, month, day);
+        datePickerDialog.show();
     }
 }
