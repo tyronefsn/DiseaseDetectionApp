@@ -2,14 +2,21 @@ package com.example.diseasedetectionapp;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.json.JSONObject;
+
+import java.util.Calendar;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -21,6 +28,8 @@ public class DataFragment extends Fragment implements GetJsonDataCallback {
     private TextView nitrogenText;
     private TextView phosphorusText;
     private TextView potassiumText;
+    private TextView dateText;
+    private final Timer timer = new Timer();
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -72,16 +81,22 @@ public class DataFragment extends Fragment implements GetJsonDataCallback {
         nitrogenText = view.findViewById(R.id.nitrogenStatus);
         phosphorusText = view.findViewById(R.id.phosphorusStatus);
         potassiumText = view.findViewById(R.id.potassiumStatus);
-        new GetJsonDataTask(this).execute();
+        dateText = view.findViewById(R.id.curDate);
 
+        callAsynchronousTask(view);
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
     public void onJsonDataReceived(JSONObject jsonObject) {
         System.out.println(jsonObject.toString());
         try {
-            waterLevelText.setText(jsonObject.getString("v1") + " cm");
+            waterLevelText.setText(jsonObject.getString("v2"));
             nitrogenText.setText(jsonObject.getString("v3") + " mg/ha");
             phosphorusText.setText(jsonObject.getString("v4") + " mg/ha");
             potassiumText.setText(jsonObject.getString("v5") + " mg/ha");
@@ -94,5 +109,38 @@ public class DataFragment extends Fragment implements GetJsonDataCallback {
     @Override
     public void onError(String error) {
         System.out.println(error);
+    }
+
+    public void callAsynchronousTask(View view) {
+        final Handler handler = new Handler();
+        TimerTask doAsyncTask = new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            new GetJsonDataTask(DataFragment.this).execute();
+                            Calendar cal = Calendar.getInstance();
+                            int day = cal.get(Calendar.DAY_OF_MONTH);
+                            int month = cal.get(Calendar.MONTH) + 1;
+                            int year = cal.get(Calendar.YEAR);
+                            // display current date as "Data Monitoring: Month Day, Year
+                            dateText.setText("Data Monitoring: " + month + "/" + day + "/" + year);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                }
+            };
+        timer.schedule(doAsyncTask, 0, 2000);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        timer.cancel();
     }
 }

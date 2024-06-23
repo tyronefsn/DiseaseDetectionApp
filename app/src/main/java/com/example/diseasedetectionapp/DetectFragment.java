@@ -163,8 +163,10 @@ public class DetectFragment extends Fragment {
             TensorBuffer inputFeature0 = TensorBuffer.createFixedSize(new int[]{1, 224, 224, 3}, DataType.FLOAT32);
             ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4*imageSize*imageSize*3);
             byteBuffer.order(ByteOrder.nativeOrder());
+
             // resize input image
             image = Bitmap.createScaledBitmap(image, imageSize, imageSize, true);
+
             int [] intValues = new int[imageSize*imageSize];
             image.getPixels(intValues,0,image.getWidth(),0,0,image.getWidth(),image.getHeight());
             int pixel = 0;
