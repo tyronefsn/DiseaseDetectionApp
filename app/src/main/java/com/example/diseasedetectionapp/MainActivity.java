@@ -56,12 +56,10 @@ public class MainActivity extends AppCompatActivity {
             } else if (itemId == R.id.data) {
                 selectedFragment = new DataFragment();
             } else if (itemId == R.id.set_values) {
-                if(isOngoing)  selectedFragment = new SetFragment();
+                if(isOngoing)  selectedFragment = new SetFragment(); // change layout
                 else selectedFragment = new SetFragment();
             } else if (itemId ==  R.id.detect) {
                 selectedFragment = new DetectFragment();
-            } else if (itemId == R.id.profile) {
-                selectedFragment = new ProfileFragment();
             }
 
             if (selectedFragment != null) {

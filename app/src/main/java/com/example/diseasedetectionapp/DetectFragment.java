@@ -234,7 +234,7 @@ public class DetectFragment extends Fragment {
             }
 
             // Define the classes
-            String[] classes = {"Healthy Rice Crop", "Rice Bacterial Leaf Blight Disease", "Rice Leaf Brown Spot Disease", "Rice Leaf Scald Disease", "Rice Neck Blast Disease", "Rice Hispa Disease", "Rice Tungro Disease", "Rice False Smut Disease", "Rice Stem Rot"};
+            String[] classes = {"Healthy Rice Crop", "Rice Bacterial Leaf Blight Disease", "Rice Leaf Brown Spot Disease", "Rice Leaf Scald Disease", "Rice Neck Blast Disease", "Rice Hispa Disease", "Rice Tungro Disease", "Rice False Smut Disease", "Rice Stem Rot", "Invalid"};
 
             // Display confidence level
             TextView confidenceTextView = getView().findViewById(R.id.confidenceLevelText);

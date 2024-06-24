@@ -15,6 +15,7 @@ tensorflowLiteMetadata = "0.1.0"
 annotation = "1.8.0"
 activity = "1.8.0"
 workRuntime = "2.9.0"
+tensorflowLiteGpu = "2.3.0"
 
 [libraries]
 cardview = { module = "androidx.cardview:cardview", version.ref = "cardview" }
@@ -32,6 +33,7 @@ tensorflow-lite-metadata = { group = "org.tensorflow", name = "tensorflow-lite-m
 annotation = { group = "androidx.annotation", name = "annotation", version.ref = "annotation" }
 activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 work-runtime = { module = "androidx.work:work-runtime", version.ref = "workRuntime" }
+tensorflow-lite-gpu = { group = "org.tensorflow", name = "tensorflow-lite-gpu", version.ref = "tensorflowLiteGpu" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

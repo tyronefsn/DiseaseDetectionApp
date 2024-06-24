@@ -1,5 +1,10 @@
 package com.example.diseasedetectionapp;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import static com.example.diseasedetectionapp.MainActivity.KEY_API_RESULT;
+
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Calendar;
@@ -29,6 +35,7 @@ public class DataFragment extends Fragment implements GetJsonDataCallback {
     private TextView phosphorusText;
     private TextView potassiumText;
     private TextView dateText;
+    SharedPreferences sharedPreferences;
     private final Timer timer = new Timer();
 
     // TODO: Rename parameter arguments, choose names that match
@@ -76,12 +83,77 @@ public class DataFragment extends Fragment implements GetJsonDataCallback {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_data, container, false);
-
+        sharedPreferences = getActivity().getSharedPreferences("DD_APP", MODE_PRIVATE);
         waterLevelText = view.findViewById(R.id.waterStatus);
         nitrogenText = view.findViewById(R.id.nitrogenStatus);
         phosphorusText = view.findViewById(R.id.phosphorusStatus);
         potassiumText = view.findViewById(R.id.potassiumStatus);
         dateText = view.findViewById(R.id.curDate);
+
+        String api_results = sharedPreferences.getString(KEY_API_RESULT, "");
+        // get individual data from results
+        String[] api_results_arr = api_results.split("\n");
+        String[] dates = new String[api_results_arr.length];
+        String[] timeArr = new String[api_results_arr.length];
+        String[] waterStatus = new String[api_results_arr.length];
+        String[] nitrogenStatus = new String[api_results_arr.length];
+        String[] phosphorusStatus = new String[api_results_arr.length];
+        String[] potassiumStatus = new String[api_results_arr.length];
+        String[] json = new String[api_results_arr.length];
+        JSONObject[] jsonObjects = new JSONObject[api_results_arr.length];
+        int arr_size = api_results_arr.length;
+
+        for(int i = 0; i < arr_size-1; i++) {
+          String[] data = api_results_arr[i].split(";");
+          System.out.println(data.length);
+          dates[i] = data[0];
+          timeArr[i] = data[1];
+          try {
+              JSONObject tempJson = new JSONObject(data[2]);
+              waterStatus[i] = tempJson.getString("v2");
+              nitrogenStatus[i] = tempJson.getString("v3");
+              phosphorusStatus[i] = tempJson.getString("v4");
+              potassiumStatus[i] = tempJson.getString("v5");
+          } catch (JSONException e) {
+              throw new RuntimeException(e);
+          }
+
+        };
+
+        waterLevelText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // do something
+                // display data on data list fragment
+                DataListFragment dataListFragment = DataListFragment.newInstance("Water Status Monitoring", "Status",  dates, timeArr, waterStatus);
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, dataListFragment).commit();
+
+            }
+        });
+        nitrogenText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // do something
+                DataListFragment dataListFragment = DataListFragment.newInstance("Nitrogen", "Content (In mg/ha)",  dates, timeArr, nitrogenStatus);
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, dataListFragment).commit();
+            }
+        });
+        phosphorusText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // do something
+                DataListFragment dataListFragment = DataListFragment.newInstance("Phosphorus", "Content (In mg/ha)",  dates, timeArr, phosphorusStatus);
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, dataListFragment).commit();
+            }
+            });
+        potassiumText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // do something
+                DataListFragment dataListFragment = DataListFragment.newInstance("Potassium", "Content (In mg/ha)",  dates, timeArr, potassiumStatus);
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, dataListFragment).commit();
+            }
+        });
 
         callAsynchronousTask(view);
         return view;
