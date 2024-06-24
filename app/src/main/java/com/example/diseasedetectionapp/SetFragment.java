@@ -2,6 +2,9 @@ package com.example.diseasedetectionapp;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import static com.example.diseasedetectionapp.APICallWorker.scheduleAPICallWorker;
+import static com.example.diseasedetectionapp.DailyNotificationWorker.scheduleDailyNotifications;
+import static com.example.diseasedetectionapp.MainActivity.KEY_API_RESULT;
 import static com.example.diseasedetectionapp.MainActivity.KEY_IS_ONGOING;
 import static com.example.diseasedetectionapp.MainActivity.KEY_REPASWD;
 import static com.example.diseasedetectionapp.MainActivity.KEY_REPSTANDINGWATER;
@@ -9,15 +12,27 @@ import static com.example.diseasedetectionapp.MainActivity.KEY_REPSTANDINGWATER1
 import static com.example.diseasedetectionapp.MainActivity.KEY_RIPASWD;
 import static com.example.diseasedetectionapp.MainActivity.KEY_RIPSTANDINGWATER;
 import static com.example.diseasedetectionapp.MainActivity.KEY_RIPTERMINALDRAINAGE;
+import static com.example.diseasedetectionapp.MainActivity.KEY_START_DATE;
 import static com.example.diseasedetectionapp.MainActivity.KEY_VEGAWD;
 import static com.example.diseasedetectionapp.MainActivity.KEY_VEGSTANDINGWATER;
 
+import android.Manifest;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -32,6 +47,7 @@ import android.widget.TextView;
 import com.google.android.material.chip.Chip;
 
 import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -39,7 +55,7 @@ import java.util.Calendar;
  * create an instance of this fragment.
  */
 public class SetFragment extends Fragment {
-
+    final static int NOTIFICATION_REQUEST_CODE = 17;
     private Button customizeButton;
     private Button submitButton;
     private TextView headerText;
@@ -118,29 +134,67 @@ public class SetFragment extends Fragment {
         chip.setText(getCurDate());
         submitButton = view.findViewById(R.id.submitButton);
 
+
         chip.setOnClickListener(v-> showDatePickerDialog());
+
+        boolean isOngoing = sharedPreferences.getBoolean(KEY_IS_ONGOING, false);
+
+        if(isOngoing) {
+            submitButton.setText("Cancel");
+            submitButton.setBackgroundColor(getResources().getColor(R.color.red));
+            customizeButton.setEnabled(false);
+        }
 
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                
-                // write on shared preferences
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putBoolean(KEY_IS_ONGOING, true);
-                editor.putInt(KEY_VEGSTANDINGWATER, Integer.parseInt(editTexts[0].getText().toString()));
-                editor.putInt(KEY_VEGAWD, Integer.parseInt(editTexts[1].getText().toString()));
-                editor.putInt(KEY_REPSTANDINGWATER, Integer.parseInt(editTexts[2].getText().toString()));
-                editor.putInt(KEY_REPASWD, Integer.parseInt(editTexts[3].getText().toString()));
-                editor.putInt(KEY_REPSTANDINGWATER1, Integer.parseInt(editTexts[4].getText().toString()));
-                editor.putInt(KEY_RIPSTANDINGWATER, Integer.parseInt(editTexts[5].getText().toString()));
-                editor.putInt(KEY_RIPASWD, Integer.parseInt(editTexts[6].getText().toString()));
-                editor.putInt(KEY_RIPTERMINALDRAINAGE, Integer.parseInt(editTexts[7].getText().toString()));
-                editor.apply();
+                // check if posting notification is permitted
+                if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+                    // write on shared preferences
+                    if(isOngoing) {
+                        // remove all values in sharedPreferences
+                        sharedPreferences.edit().clear().apply();
+                        NotificationHelper.sendNotification(container.getContext(), "AWD Monitoring Cancelled", "Na-cancel ang AWD monitoring.");
+                        SetFragment setFragment = new SetFragment();
+                        getActivity().getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.frameLayout, setFragment)
+                                .commit();
+                    } else {
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putBoolean(KEY_IS_ONGOING, true);
+                        editor.putString(KEY_START_DATE, chip.getText().toString());
+                        editor.putInt(KEY_VEGSTANDINGWATER, Integer.parseInt(editTexts[0].getText().toString()));
+                        editor.putInt(KEY_VEGAWD, Integer.parseInt(editTexts[1].getText().toString()));
+                        editor.putInt(KEY_REPSTANDINGWATER, Integer.parseInt(editTexts[2].getText().toString()));
+                        editor.putInt(KEY_REPASWD, Integer.parseInt(editTexts[3].getText().toString()));
+                        editor.putInt(KEY_REPSTANDINGWATER1, Integer.parseInt(editTexts[4].getText().toString()));
+                        editor.putInt(KEY_RIPSTANDINGWATER, Integer.parseInt(editTexts[5].getText().toString()));
+                        editor.putInt(KEY_RIPASWD, Integer.parseInt(editTexts[6].getText().toString()));
+                        editor.putInt(KEY_RIPTERMINALDRAINAGE, Integer.parseInt(editTexts[7].getText().toString()));
+                        editor.apply();
 
-                // send push notification
-                NotificationHelper.sendNotification(container.getContext(), "AWD Stage Started", "Vegetative Growth Stage - STANDING WATER ay simula na ngayong araw. Panatilihing HIGH ang water status sa loob ng sampung araw (10 days).");
+                        // send push notification
+                        NotificationHelper.sendNotification(container.getContext(), "AWD Stage Started", "Vegetative Growth Stage - STANDING WATER ay simula na ngayong araw. Panatilihing HIGH ang water status sa loob ng sampung araw (10 days).");
 
-                // schedule daily notifications
+                        // clear api results
+                        sharedPreferences.edit().putString(KEY_API_RESULT, null).apply();
+
+                        // send daily notification
+                        scheduleDailyNotifications(getContext());
+                        scheduleAPICallWorker(getContext());
+
+                        // create a new fragment
+                        SetFragment setFragment = new SetFragment();
+                        getActivity().getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.frameLayout, setFragment)
+                                .commit();
+//                    submitButton.setEnabled(false);
+                    }
+                } else {
+                    // request for permission
+                    requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, NOTIFICATION_REQUEST_CODE);
+                }
+
             }
         });
         // handle customize button
@@ -199,6 +253,39 @@ public class SetFragment extends Fragment {
 
         return view;
     }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode == NOTIFICATION_REQUEST_CODE) {
+            if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                submitButton.performClick();
+            } else if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.POST_NOTIFICATIONS)) {
+                // show rationale
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setMessage("This feature is unavailable because this feature requires permission that you have denied. Please allow Notification Permission from settings to proceed further")
+                        .setTitle("Permission Required")
+                        .setCancelable(false)
+                        .setNegativeButton("Cancel", ((dialog, which) -> dialog.dismiss()))
+                        .setPositiveButton("Settings", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                Uri uri = Uri.fromParts("package", getActivity().getPackageName(), null);
+                                intent.setData(uri);
+                                startActivity(intent);
+
+                                dialog.dismiss();
+                            }
+                        });
+                builder.show();
+            } else {
+                // request for permission
+                requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS},  NOTIFICATION_REQUEST_CODE);
+
+            }
+        }
+    }
+
     private int[] computeStages(EditText[] editTexts) {
         int[] res = {0,0,0};
 

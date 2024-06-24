@@ -17,10 +17,11 @@ import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final String SHARED_PREF_NAME = "DD_APP";
     ActivityMainBinding binding;
     SharedPreferences sharedPreferences;
-    private static final String SHARED_PREF_NAME = "DD_APP";
 
+    static final String KEY_API_RESULT = "apiResult";
     static final String KEY_IS_ONGOING = "isOngoing";
     static final String KEY_VEGSTANDINGWATER = "vegStandingWater";
     static final String KEY_VEGAWD = "vegSafeAWD";
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     static final String KEY_RIPSTANDINGWATER = "ripStandingWater";
     static final String KEY_RIPASWD = "ripSafeAWD";
     static final String KEY_RIPTERMINALDRAINAGE = "ripTerminalDrainage";
+    static final String KEY_START_DATE = "startingDate";
 
 
 
@@ -39,7 +41,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         sharedPreferences = getSharedPreferences(SHARED_PREF_NAME, MODE_PRIVATE);
         boolean isOngoing = sharedPreferences.getBoolean(KEY_IS_ONGOING, false);
-
+        String api_results = sharedPreferences.getString(KEY_API_RESULT, "");
+        System.out.println(api_results);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         EdgeToEdge.enable(this);
         setContentView(binding.getRoot());
@@ -53,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
             } else if (itemId == R.id.data) {
                 selectedFragment = new DataFragment();
             } else if (itemId == R.id.set_values) {
-                if(isOngoing)  selectedFragment = new ProfileFragment();
+                if(isOngoing)  selectedFragment = new SetFragment();
                 else selectedFragment = new SetFragment();
             } else if (itemId ==  R.id.detect) {
                 selectedFragment = new DetectFragment();

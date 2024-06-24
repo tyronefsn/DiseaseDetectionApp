@@ -51,9 +51,8 @@ dependencies {
     implementation(libs.tensorflow.lite.support)
     implementation(libs.tensorflow.lite.metadata)
     implementation(libs.cardview)
-
-
-
+    implementation(libs.work.runtime)
+    implementation(libs.core.ktx)
 
 
 
