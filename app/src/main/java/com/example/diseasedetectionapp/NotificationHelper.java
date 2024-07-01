@@ -18,6 +18,9 @@ public class NotificationHelper {
     public static final String CHANNEL_ID = "AWD_NOTIF_CHANNEL";
     public static final String CHANNEL_NAME = "AWD Notifications";
     public static final String CHANNEL_DESC = "Notifications for AWD Stages";
+    public static final String GROUP_STRING = "com.android.example.DD_app";
+
+    static int notificationId = 0;
 
     public static void createNotificationChannel(Context context) {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -33,6 +36,7 @@ public class NotificationHelper {
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentTitle(title)
 //                .setContentText(message)
+                .setGroup(GROUP_STRING)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
                 .setAutoCancel(true);
@@ -42,7 +46,9 @@ public class NotificationHelper {
         builder.setContentIntent(pendingIntent);
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(1, builder.build());
+        notificationManager.notify(notificationId, builder.build());
+
+        notificationId++;
 
     }
 }

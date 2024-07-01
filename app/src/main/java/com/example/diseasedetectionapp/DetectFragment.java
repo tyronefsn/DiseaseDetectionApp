@@ -237,11 +237,14 @@ public class DetectFragment extends Fragment {
             String[] classes = {"Healthy Rice Crop", "Rice Bacterial Leaf Blight Disease", "Rice Leaf Brown Spot Disease", "Rice Leaf Scald Disease", "Rice Neck Blast Disease", "Rice Hispa Disease", "Rice Tungro Disease", "Rice False Smut Disease", "Rice Stem Rot", "Invalid"};
 
             // Display confidence level
+            TextView confidenceHeader = getView().findViewById(R.id.textView4);
+            confidenceHeader.setVisibility(View.VISIBLE);
             TextView confidenceTextView = getView().findViewById(R.id.confidenceLevelText);
+            confidenceTextView.setVisibility(View.VISIBLE);
             String confidenceText = "Confidence Level: " + String.format("%.2f", maxConfidence * 100) + "%";
             confidenceTextView.setText(confidenceText);
             TextView result = getView().findViewById(R.id.resultText);
-
+            TextView clickableText = getView().findViewById(R.id.clickableText);
             if (maxConfidence < threshold) {
                 // If confidence is below threshold, display message
                 result.setText(R.string.image_is_not_recognized);
@@ -256,13 +259,17 @@ public class DetectFragment extends Fragment {
                 }
             }
 
-            result.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    startActivity(new Intent(Intent.ACTION_VIEW,
-                            Uri.parse("https://www.google.com/search?q="+result.getText())));
-                }
-            });
+            if (result.getText() != "Invalid") {
+
+                clickableText.setVisibility(View.VISIBLE);
+                clickableText.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        startActivity(new Intent(Intent.ACTION_VIEW,
+                                Uri.parse("https://www.google.com/search?q="+result.getText())));
+                    }
+                });
+            }
 
             model.close();
 

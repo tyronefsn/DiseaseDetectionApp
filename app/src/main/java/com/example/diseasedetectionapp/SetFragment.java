@@ -174,7 +174,7 @@ public class SetFragment extends Fragment {
                         editor.apply();
 
                         // send push notification
-                        NotificationHelper.sendNotification(container.getContext(), "AWD Stage Started", "Vegetative Growth Stage - STANDING WATER ay simula na ngayong araw.\n Panatilihing HIGH ang water status sa loob ng sampung araw (10 days).\nMagabono ng Nitrogen, Phosphorus, at Potassium");
+//                        NotificationHelper.sendNotification(container.getContext(), "AWD Stage Started", "Vegetative Growth Stage - STANDING WATER ay simula na ngayong araw.\n Panatilihing HIGH ang water status sa loob ng sampung araw (10 days).\nMagabono ng Nitrogen, Phosphorus, at Potassium");
 
                         // clear api results
                         sharedPreferences.edit().putString(KEY_API_RESULT, null).apply();

@@ -48,6 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="31dp"
             android:text="Classification:"
+            android:visibility="gone"
             android:textSize="14sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -59,7 +60,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="9dp"
-            android:text="Healthy Rice Crop"
+            android:text="Select an image to classify"
             android:textSize="19sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -72,11 +73,27 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="9dp"
             android:text="Confidence Level: 99.99%"
+            android:visibility="gone"
             android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/resultText" />
+
+        <TextView
+            android:id="@+id/clickableText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:text="Click here to open in Google Search"
+            android:textColor="#00008B"
+            android:textSize="12sp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/confidenceLevelText" />
 
         <LinearLayout
             android:id="@+id/linearLayout"

@@ -15,15 +15,19 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -36,6 +40,8 @@ public class HomeFragment extends Fragment {
     TextView phaseText;
     TextView waterStatus;
     TextView soilStatus;
+    ImageView appIcon;
+    DrawerLayout drawerLayout;
     SharedPreferences sharedPreferences;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -87,9 +93,22 @@ public class HomeFragment extends Fragment {
         phaseText = view.findViewById(R.id.phaseText);
         waterStatus = view.findViewById(R.id.waterStatus);
         soilStatus = view.findViewById(R.id.soilStatus);
+        drawerLayout = view.findViewById(R.id.drawer_layout);
+        appIcon = view.findViewById(R.id.appIcon);
         sharedPreferences = getActivity().getSharedPreferences(MainActivity.SHARED_PREF_NAME, Context.MODE_PRIVATE);
 
+
         boolean isOngoing = sharedPreferences.getBoolean(KEY_IS_ONGOING, false);
+        appIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(drawerLayout.isDrawerOpen(GravityCompat.END)) {
+                    drawerLayout.closeDrawer(GravityCompat.END);
+                } else {
+                    drawerLayout.openDrawer(GravityCompat.END);
+                }
+            }
+        });
         if(!isOngoing) {
             numDays.setText("");
             stageText.setText("");
@@ -102,11 +121,13 @@ public class HomeFragment extends Fragment {
             // compute number of days elapsed
             long diff = 0;
             try {
-                diff = System.currentTimeMillis() - new SimpleDateFormat("dd/MM/yyyy").parse(startDate).getTime();
+                diff = System.currentTimeMillis() - new SimpleDateFormat("MM/dd/yyyy").parse(startDate).getTime();
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }
-            int days = (int) diff / (24 * 60 * 60 * 1000);
+            int days = (int) (diff / (24 * 60 * 60 * 1000));
+            System.out.println(diff);
+            System.out.println(days);
             int vegStandingWater = sharedPreferences.getInt(KEY_VEGSTANDINGWATER, 0);
             int vegSafeAWD = sharedPreferences.getInt(KEY_VEGAWD, 0) + vegStandingWater;
             int repStandingWater = sharedPreferences.getInt(KEY_REPSTANDINGWATER, 0) + vegSafeAWD;
@@ -126,16 +147,16 @@ public class HomeFragment extends Fragment {
                     "Note: Iwasang umabot sa OVER ang water status dahil maaaring maabot ng tubig at masira ang device. Maiging tanggalin na ang device kung hindi mapipigilan ang pagtaas ng tubig. \n";
 
             numDays.setText("Day " + String.valueOf(days + 1));
-            int nitrogenInterval = (int) (vegStandingWater + vegSafeAWD) / 3;
+            int nitrogenInterval = (int) (vegSafeAWD) / 3;
 
             if(days == 0) {
                 soilStatus.setText("Maglagay ng Nitrogen, Phosphorus, at Potassium");
-            } else if (days+1 > (vegStandingWater + vegSafeAWD)) {
+            } else if ((days+1) > (vegSafeAWD)) {
                 soilStatus.setText("");
-            } else if(days+1 % nitrogenInterval == 0) {
+            } else if(((days+1) % nitrogenInterval) == 0) {
                 soilStatus.setText("Maglagay ng Nitrogen");
-            } else if (days+1 % nitrogenInterval != 0) {
-                soilStatus.setText("Maghintay ng " + String.valueOf((days+1 % nitrogenInterval) - nitrogenInterval) + " days bago maglagay ng Nitrogen");
+            } else if (((days+1) % nitrogenInterval) != 0) {
+                soilStatus.setText("Maghintay ng " + String.valueOf( nitrogenInterval - ((days+1) % nitrogenInterval) ) + " days bago maglagay ng Nitrogen");
             }
             if (days < vegStandingWater) {
                 stageText.setText("Vegatative Growth Stage");

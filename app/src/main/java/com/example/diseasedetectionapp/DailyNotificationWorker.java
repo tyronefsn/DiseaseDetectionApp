@@ -10,6 +10,7 @@ import static com.example.diseasedetectionapp.MainActivity.KEY_RIPTERMINALDRAINA
 import static com.example.diseasedetectionapp.MainActivity.KEY_START_DATE;
 import static com.example.diseasedetectionapp.MainActivity.KEY_VEGAWD;
 import static com.example.diseasedetectionapp.MainActivity.KEY_VEGSTANDINGWATER;
+import static com.example.diseasedetectionapp.MainActivity.SHARED_PREF_NAME;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -46,6 +47,13 @@ public class DailyNotificationWorker extends Worker {
 
             NotificationHelper.createNotificationChannel(getApplicationContext());
             NotificationHelper.sendNotification(getApplicationContext(), notificationTitle, notificationMessage);
+
+            // notify stage for NPK;
+            if(isStillNPK()) {
+                String npkMessage = "Today's NPK Action:" + getNPKAction();
+                NotificationHelper.sendNotification(getApplicationContext(), "AWD NPK Daily Notification", npkMessage);
+            }
+
         } else {
             System.out.println("Not working.");
         }
@@ -53,23 +61,75 @@ public class DailyNotificationWorker extends Worker {
         return Result.success();
     }
 
+    private String getNPKAction() {
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        // get starting date
+        String startDate = sharedPreferences.getString(KEY_START_DATE, "");
+        // compute number of days elapsed
+        long diff = 0;
+        try {
+            diff = System.currentTimeMillis() - new SimpleDateFormat("MM/dd/yyyy").parse(startDate).getTime();
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        int days = (int) diff / (24 * 60 * 60 * 1000);
+
+        int vegStandingWater = sharedPreferences.getInt(KEY_VEGSTANDINGWATER, 0);
+        int vegSafeAWD = sharedPreferences.getInt(KEY_VEGAWD, 0) + vegStandingWater;
+        int nitrogenInterval = (int) (vegSafeAWD) / 3;
+
+        if(days == 0) {
+            return "Maglagay ng Nitrogen, Phosphorus, at Potassium";
+        } else if ((days+1) > (vegSafeAWD)) {
+            return "";
+        } else if(((days+1) % nitrogenInterval) == 0) {
+            return "Maglagay ng Nitrogen";
+        } else if (((days+1) % nitrogenInterval) != 0) {
+            return ("Maghintay ng " + String.valueOf( nitrogenInterval - ((days + 1) % nitrogenInterval)) + " days bago maglagay ng Nitrogen");
+        }
+        return "";
+    }
+
+    private boolean isStillNPK() {
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        // get starting date
+        String startDate = sharedPreferences.getString(KEY_START_DATE, "");
+        // compute number of days elapsed
+        long diff = 0;
+        try {
+            diff = System.currentTimeMillis() - new SimpleDateFormat("MM/dd/yyyy").parse(startDate).getTime();
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        int days = (int) diff / (24 * 60 * 60 * 1000);
+
+        int vegStandingWater = sharedPreferences.getInt(KEY_VEGSTANDINGWATER, 0);
+        int vegSafeAWD = sharedPreferences.getInt(KEY_VEGAWD, 0) + vegStandingWater;
+
+        if (days < vegSafeAWD) {
+            return true;
+        }
+
+        return false;
+    }
+
     private String getAction() {
         // Fetch current AWD stage and phase from SharedPreferences
-        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(NotificationHelper.CHANNEL_ID, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         boolean isOngoing = sharedPreferences.getBoolean(KEY_IS_ONGOING, false);
+        System.out.println(isOngoing);
         if(isOngoing) {
             // get number of days between start date and current date
             String startDate = sharedPreferences.getString(KEY_START_DATE, "");
-            String currentDate = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
+            String currentDate = new SimpleDateFormat("MM/dd/yyyy").format(new Date());
             long diff;
             try {
-                diff = new SimpleDateFormat("dd/MM/yyyy").parse(currentDate).getTime() - new SimpleDateFormat("dd/MM/yyyy").parse(startDate).getTime();
+                diff = new SimpleDateFormat("MM/dd/yyyy").parse(currentDate).getTime() - new SimpleDateFormat("MM/dd/yyyy").parse(startDate).getTime();
             } catch (ParseException e) {
                 diff = 0;
                 e.printStackTrace();
             }
-            int days = (int) diff / (24 * 60 * 60 * 1000);
-
+            int days = (int) (diff / (24 * 60 * 60 * 1000));
             // get notif strings
             String standingWater = "Panatilihing HIGH ang water status";
             String safeAWD = "(1) Patubigan hanggang maging HIGH ang water status. \n" +
@@ -120,9 +180,9 @@ public class DailyNotificationWorker extends Worker {
         workManager.cancelAllWorkByTag("daily_awd_notifications");
         long initialDelay = calculateInitialDelay();
         // print the delay in hours
-        PeriodicWorkRequest dailyNotificationRequest = new PeriodicWorkRequest.Builder(DailyNotificationWorker.class, 15, TimeUnit.MINUTES)
+        PeriodicWorkRequest dailyNotificationRequest = new PeriodicWorkRequest.Builder(DailyNotificationWorker.class, 1, TimeUnit.DAYS)
                 .addTag("daily_awd_notifications")
-                .setInitialDelay(initialDelay, TimeUnit.SECONDS)
+//                .setInitialDelay(initialDelay, TimeUnit.SECONDS)
                 .build();
 
         workManager.enqueue(dailyNotificationRequest);
