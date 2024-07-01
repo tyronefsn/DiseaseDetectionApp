@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/default_profile"
+        android:title="Prototype 1"/>
+    <item
+        android:id="@+id/add_profile"
+        android:icon="@drawable/baseline_add_24"
+        android:title="Add New Device" />
+</menu>
