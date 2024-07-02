@@ -32,8 +32,8 @@ public class MainActivity extends AppCompatActivity {
     static final String KEY_RIPASWD = "ripSafeAWD";
     static final String KEY_RIPTERMINALDRAINAGE = "ripTerminalDrainage";
     static final String KEY_START_DATE = "startingDate";
-    static final String KEY_PROFILES = "profileKey";
     static final String KEY_ACTIVE_PROFILE = "activeProfile";
+    static final String KEY_PROFILES = "profiles";
 
 
 

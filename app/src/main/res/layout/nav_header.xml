@@ -7,15 +7,15 @@
     android:gravity="bottom"
     android:padding="16dp">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/baseline_account_circle_24" />
+<!--    <ImageView-->
+   <!--     android:l-->ayout_width="wrap_content"
+<!--        -->android:layout_height="wrap_content"
+<!--     -->   android:src="@drawable/baseline_account_circle_24" />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="8dp"
-        android:text="Profile Name"
+        android:text="Select Profile"
         android:textColor="@android:color/white"
         android:textSize="20sp"
         android:textStyle="bold" />

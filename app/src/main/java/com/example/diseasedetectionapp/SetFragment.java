@@ -4,6 +4,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 import static com.example.diseasedetectionapp.APICallWorker.scheduleAPICallWorker;
 import static com.example.diseasedetectionapp.DailyNotificationWorker.scheduleDailyNotifications;
+import static com.example.diseasedetectionapp.MainActivity.KEY_ACTIVE_PROFILE;
 import static com.example.diseasedetectionapp.MainActivity.KEY_API_RESULT;
 import static com.example.diseasedetectionapp.MainActivity.KEY_IS_ONGOING;
 import static com.example.diseasedetectionapp.MainActivity.KEY_REPASWD;
@@ -139,11 +140,15 @@ public class SetFragment extends Fragment {
 
         boolean isOngoing = sharedPreferences.getBoolean(KEY_IS_ONGOING, false);
 
-        if(isOngoing) {
+        String activeProfile = sharedPreferences.getString(KEY_ACTIVE_PROFILE, null);
+        if(isOngoing && activeProfile.equals("default_profile")) {
             submitButton.setText("Cancel");
             submitButton.setBackgroundColor(getResources().getColor(R.color.red));
             customizeButton.setEnabled(false);
+        } else if (!activeProfile.equals("default_profile")) {
+            submitButton.setEnabled(false);
         }
+
 
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override

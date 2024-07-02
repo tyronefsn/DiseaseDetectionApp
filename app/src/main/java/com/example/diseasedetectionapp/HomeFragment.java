@@ -1,6 +1,8 @@
 package com.example.diseasedetectionapp;
 
+import static com.example.diseasedetectionapp.MainActivity.KEY_ACTIVE_PROFILE;
 import static com.example.diseasedetectionapp.MainActivity.KEY_IS_ONGOING;
+import static com.example.diseasedetectionapp.MainActivity.KEY_PROFILES;
 import static com.example.diseasedetectionapp.MainActivity.KEY_REPASWD;
 import static com.example.diseasedetectionapp.MainActivity.KEY_REPSTANDINGWATER;
 import static com.example.diseasedetectionapp.MainActivity.KEY_REPSTANDINGWATER1;
@@ -11,23 +13,37 @@ import static com.example.diseasedetectionapp.MainActivity.KEY_START_DATE;
 import static com.example.diseasedetectionapp.MainActivity.KEY_VEGAWD;
 import static com.example.diseasedetectionapp.MainActivity.KEY_VEGSTANDINGWATER;
 
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.material.navigation.NavigationView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Set;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -41,6 +57,8 @@ public class HomeFragment extends Fragment {
     TextView waterStatus;
     TextView soilStatus;
     ImageView appIcon;
+    NavigationView navigationView;
+    List<String> profiles = new ArrayList<>();
     DrawerLayout drawerLayout;
     SharedPreferences sharedPreferences;
     // TODO: Rename parameter arguments, choose names that match
@@ -93,10 +111,17 @@ public class HomeFragment extends Fragment {
         phaseText = view.findViewById(R.id.phaseText);
         waterStatus = view.findViewById(R.id.waterStatus);
         soilStatus = view.findViewById(R.id.soilStatus);
+        navigationView = view.findViewById(R.id.navigation_view);
         drawerLayout = view.findViewById(R.id.drawer_layout);
         appIcon = view.findViewById(R.id.appIcon);
         sharedPreferences = getActivity().getSharedPreferences(MainActivity.SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        String activeProfile = sharedPreferences.getString(KEY_ACTIVE_PROFILE, "");
 
+        if(activeProfile.isEmpty()) {
+            sharedPreferences.edit().putString(KEY_ACTIVE_PROFILE, "default_profile").apply();
+        }
+        loadProfiles();
+        populateProfiles();
 
         boolean isOngoing = sharedPreferences.getBoolean(KEY_IS_ONGOING, false);
         appIcon.setOnClickListener(new View.OnClickListener() {
@@ -109,7 +134,31 @@ public class HomeFragment extends Fragment {
                 }
             }
         });
-        if(!isOngoing) {
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id = item.getItemId();
+                if (id == 0) {
+                    // Handle default profile click
+                    sharedPreferences.edit().putString(KEY_ACTIVE_PROFILE, "default_profile").apply();
+                    HomeFragment newHomeFragment = new HomeFragment();
+                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, newHomeFragment).commit();
+                } else if (id == profiles.size()) {
+                    // Create new intent for adding profile
+                    AddPrototypeFragment addPrototypeFragment = new AddPrototypeFragment();
+                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, addPrototypeFragment).commit();
+                } else {
+                    sharedPreferences.edit().putString(KEY_ACTIVE_PROFILE, "mock_profile").apply();
+                    HomeFragment newHomeFragment = new HomeFragment();
+                    getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, newHomeFragment).commit();
+                }
+                // close drawer
+                drawerLayout.closeDrawer(GravityCompat.END);
+
+                return true;
+            }
+        });
+        if(!isOngoing || !activeProfile.equals("default_profile")) {
             numDays.setText("");
             stageText.setText("");
             phaseText.setText("");
@@ -201,4 +250,31 @@ public class HomeFragment extends Fragment {
 
         return view;
     }
+    private void populateProfiles() {
+        Menu menu = navigationView.getMenu();
+        menu.clear();
+        for (int i = 0; i < profiles.size(); i++) {
+            menu.add(Menu.NONE, i, Menu.NONE, profiles.get(i));
+        }
+        menu.add(Menu.NONE, profiles.size(), Menu.NONE, "Add Prototype");
+    }
+
+    private void loadProfiles() {
+        String json = sharedPreferences.getString(KEY_PROFILES, null);
+        if (json != null) {
+            profiles.clear();
+            try {
+                JSONArray jsonArray = new JSONArray(json);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    profiles.add(jsonArray.getString(i));
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        } else {
+            profiles.add("Prototype 1");
+        }
+    }
+
 }
