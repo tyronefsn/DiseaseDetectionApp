@@ -43,14 +43,14 @@ public class DailyNotificationWorker extends Worker {
         if (!isOngoing) {
             // construct your notification message based on the current stage and phase
             String notificationTitle = "AWD Daily Update";
-            String notificationMessage = "Today's AWD Action:" + getAction();
+            String notificationMessage = "Today's AWD Action: " + getAction();
 
             NotificationHelper.createNotificationChannel(getApplicationContext());
             NotificationHelper.sendNotification(getApplicationContext(), notificationTitle, notificationMessage);
 
             // notify stage for NPK;
             if(isStillNPK()) {
-                String npkMessage = "Today's NPK Action:" + getNPKAction();
+                String npkMessage = "Today's NPK Action: " + getNPKAction();
                 NotificationHelper.sendNotification(getApplicationContext(), "AWD NPK Daily Notification", npkMessage);
             }
 
@@ -101,16 +101,12 @@ public class DailyNotificationWorker extends Worker {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-        int days = (int) diff / (24 * 60 * 60 * 1000);
+        int days = (int) (diff / (24 * 60 * 60 * 1000));
 
         int vegStandingWater = sharedPreferences.getInt(KEY_VEGSTANDINGWATER, 0);
         int vegSafeAWD = sharedPreferences.getInt(KEY_VEGAWD, 0) + vegStandingWater;
 
-        if (days < vegSafeAWD) {
-            return true;
-        }
-
-        return false;
+        return (days < vegSafeAWD);
     }
 
     private String getAction() {
@@ -151,7 +147,7 @@ public class DailyNotificationWorker extends Worker {
             int ripStandingWater = sharedPreferences.getInt(KEY_RIPSTANDINGWATER, 0) + repStandingWater1;
             int ripSafeAWD = sharedPreferences.getInt(KEY_RIPASWD, 0) + ripStandingWater;
             int ripTerminalDrainage = sharedPreferences.getInt(KEY_RIPTERMINALDRAINAGE, 0) + ripSafeAWD;
-
+            days++;
             if (days < vegStandingWater) {
                 return "Vegatative Growth Stage - STANDING WATER: " + standingWater;
             } else if (days < vegSafeAWD) {

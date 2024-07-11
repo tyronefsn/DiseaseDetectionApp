@@ -7,6 +7,7 @@ import static com.example.diseasedetectionapp.DailyNotificationWorker.scheduleDa
 import static com.example.diseasedetectionapp.MainActivity.KEY_ACTIVE_PROFILE;
 import static com.example.diseasedetectionapp.MainActivity.KEY_API_RESULT;
 import static com.example.diseasedetectionapp.MainActivity.KEY_IS_ONGOING;
+import static com.example.diseasedetectionapp.MainActivity.KEY_PROFILES;
 import static com.example.diseasedetectionapp.MainActivity.KEY_REPASWD;
 import static com.example.diseasedetectionapp.MainActivity.KEY_REPSTANDINGWATER;
 import static com.example.diseasedetectionapp.MainActivity.KEY_REPSTANDINGWATER1;
@@ -142,10 +143,12 @@ public class SetFragment extends Fragment {
 
         String activeProfile = sharedPreferences.getString(KEY_ACTIVE_PROFILE, null);
         if(isOngoing && activeProfile.equals("default_profile")) {
-            submitButton.setText("Cancel");
-            submitButton.setBackgroundColor(getResources().getColor(R.color.red));
-            customizeButton.setEnabled(false);
-        } else if (!activeProfile.equals("default_profile")) {
+            OverviewFragment overviewFragment = new OverviewFragment();
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.frameLayout, overviewFragment)
+                    .commit();
+            return view;
+        } else if (!(activeProfile.equals("default_profile"))) {
             submitButton.setEnabled(false);
         }
 
@@ -158,7 +161,12 @@ public class SetFragment extends Fragment {
                     // write on shared preferences
                     if(isOngoing) {
                         // remove all values in sharedPreferences
+                        String activeProfile = sharedPreferences.getString(KEY_ACTIVE_PROFILE, null);
+                        String profiles = sharedPreferences.getString(KEY_PROFILES, null);
                         sharedPreferences.edit().clear().apply();
+                        sharedPreferences.edit().putString(KEY_ACTIVE_PROFILE, activeProfile).apply();
+
+                        sharedPreferences.edit().putString(KEY_PROFILES, profiles).apply();
                         NotificationHelper.sendNotification(container.getContext(), "AWD Monitoring Cancelled", "Na-cancel ang AWD monitoring.");
                         SetFragment setFragment = new SetFragment();
                         getActivity().getSupportFragmentManager().beginTransaction()
@@ -166,6 +174,7 @@ public class SetFragment extends Fragment {
                                 .commit();
                     } else {
                         SharedPreferences.Editor editor = sharedPreferences.edit();
+
                         editor.putBoolean(KEY_IS_ONGOING, true);
                         editor.putString(KEY_START_DATE, chip.getText().toString());
                         editor.putInt(KEY_VEGSTANDINGWATER, Integer.parseInt(editTexts[0].getText().toString()));
@@ -189,9 +198,9 @@ public class SetFragment extends Fragment {
                         scheduleAPICallWorker(getContext());
 
                         // create a new fragment
-                        SetFragment setFragment = new SetFragment();
+                        OverviewFragment overviewFragment = new OverviewFragment();
                         getActivity().getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.frameLayout, setFragment)
+                                .replace(R.id.frameLayout, overviewFragment)
                                 .commit();
 //                    submitButton.setEnabled(false);
                     }

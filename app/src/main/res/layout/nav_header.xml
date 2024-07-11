@@ -7,10 +7,6 @@
     android:gravity="bottom"
     android:padding="16dp">
 
-<!--    <ImageView-->
-   <!--     android:l-->ayout_width="wrap_content"
-<!--        -->android:layout_height="wrap_content"
-<!--     -->   android:src="@drawable/baseline_account_circle_24" />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

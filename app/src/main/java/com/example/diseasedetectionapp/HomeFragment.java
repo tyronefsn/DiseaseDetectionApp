@@ -12,11 +12,14 @@ import static com.example.diseasedetectionapp.MainActivity.KEY_RIPTERMINALDRAINA
 import static com.example.diseasedetectionapp.MainActivity.KEY_START_DATE;
 import static com.example.diseasedetectionapp.MainActivity.KEY_VEGAWD;
 import static com.example.diseasedetectionapp.MainActivity.KEY_VEGSTANDINGWATER;
+import static com.example.diseasedetectionapp.MainActivity.SHARED_PREF_NAME;
 
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -30,8 +33,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import com.google.android.material.navigation.NavigationView;
 
@@ -57,6 +63,7 @@ public class HomeFragment extends Fragment {
     TextView waterStatus;
     TextView soilStatus;
     ImageView appIcon;
+    VideoView videoView;
     NavigationView navigationView;
     List<String> profiles = new ArrayList<>();
     DrawerLayout drawerLayout;
@@ -114,9 +121,19 @@ public class HomeFragment extends Fragment {
         navigationView = view.findViewById(R.id.navigation_view);
         drawerLayout = view.findViewById(R.id.drawer_layout);
         appIcon = view.findViewById(R.id.appIcon);
+        videoView = view.findViewById(R.id.video);
         sharedPreferences = getActivity().getSharedPreferences(MainActivity.SHARED_PREF_NAME, Context.MODE_PRIVATE);
         String activeProfile = sharedPreferences.getString(KEY_ACTIVE_PROFILE, "");
 
+        MediaController mediaController = new MediaController(getContext());
+        videoView.setVideoURI(Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.sample));
+        videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mediaController.setAnchorView(videoView);
+                videoView.setMediaController(mediaController);
+            }
+        });
         if(activeProfile.isEmpty()) {
             sharedPreferences.edit().putString(KEY_ACTIVE_PROFILE, "default_profile").apply();
         }
@@ -175,7 +192,6 @@ public class HomeFragment extends Fragment {
                 throw new RuntimeException(e);
             }
             int days = (int) (diff / (24 * 60 * 60 * 1000));
-            System.out.println(diff);
             System.out.println(days);
             int vegStandingWater = sharedPreferences.getInt(KEY_VEGSTANDINGWATER, 0);
             int vegSafeAWD = sharedPreferences.getInt(KEY_VEGAWD, 0) + vegStandingWater;
@@ -185,6 +201,7 @@ public class HomeFragment extends Fragment {
             int ripStandingWater = sharedPreferences.getInt(KEY_RIPSTANDINGWATER, 0) + repStandingWater1;
             int ripSafeAWD = sharedPreferences.getInt(KEY_RIPASWD, 0) + ripStandingWater;
             int ripTerminalDrainage = sharedPreferences.getInt(KEY_RIPTERMINALDRAINAGE, 0) + ripSafeAWD;
+            System.out.println(ripTerminalDrainage);
             String standingWater = "Panatilihing HIGH ang water status";
             String safeAWD = "(1) Patubigan hanggang maging HIGH ang water status. \n" +
                     "(2) Hayaan lang matuyo kung NORMAL ang water status. \n" +
@@ -206,7 +223,10 @@ public class HomeFragment extends Fragment {
                 soilStatus.setText("Maglagay ng Nitrogen");
             } else if (((days+1) % nitrogenInterval) != 0) {
                 soilStatus.setText("Maghintay ng " + String.valueOf( nitrogenInterval - ((days+1) % nitrogenInterval) ) + " days bago maglagay ng Nitrogen");
+            } else {
+                soilStatus.setText("");
             }
+            days++;
             if (days < vegStandingWater) {
                 stageText.setText("Vegatative Growth Stage");
                 phaseText.setText("STANDING WATER");
@@ -245,6 +265,10 @@ public class HomeFragment extends Fragment {
                 stageText.setText("Ripening Stage");
                 phaseText.setText("TERMINAL DRAINAGE");
                 waterStatus.setText(terminalDrainage);
+            } else {
+                stageText.setText("HARVESTING STAGE");
+                phaseText.setText("");
+                waterStatus.setText("Maaari mo na i-cancel ang pag-track.");
             }
         }
 
@@ -254,9 +278,46 @@ public class HomeFragment extends Fragment {
         Menu menu = navigationView.getMenu();
         menu.clear();
         for (int i = 0; i < profiles.size(); i++) {
-            menu.add(Menu.NONE, i, Menu.NONE, profiles.get(i));
+            String profile = profiles.get(i);
+
+            MenuItem profileItem = menu.add(Menu.NONE, i, Menu.NONE, profile);
+            profileItem.setActionView(R.layout.nav_menu_item);
+
+            View actionView = profileItem.getActionView();
+//            TextView profileName = actionView.findViewById(R.id.profile_name);
+            ImageButton deleteButton = actionView.findViewById(R.id.delete_button);
+
+//            profileName.setText(profile);
+
+            if(!profile.equals("Prototype 1") && !profile.equals("Add Prototype")) {
+                deleteButton.setVisibility(View.VISIBLE);
+                deleteButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        deleteProfile(profile);
+                        HomeFragment newHomeFragment = new HomeFragment();
+                        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, newHomeFragment).commit();
+                    }
+                });
+            }
+
         }
         menu.add(Menu.NONE, profiles.size(), Menu.NONE, "Add Prototype");
+    }
+
+    private void deleteProfile(String profile) {
+        profiles.remove(profile);
+        saveProfiles();
+        populateProfiles();
+        sharedPreferences.edit().putString(KEY_ACTIVE_PROFILE, "default_profile").apply();
+    }
+
+    private void saveProfiles() {
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        JSONArray jsonArray = new JSONArray(profiles);
+        editor.putString(KEY_PROFILES, jsonArray.toString());
+        editor.apply();
     }
 
     private void loadProfiles() {
