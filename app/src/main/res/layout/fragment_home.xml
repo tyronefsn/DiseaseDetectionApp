@@ -414,7 +414,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginRight="16dp"
                     android:layout_marginBottom="8dp"
-                    android:text="Reduces irrigation water use by up to 30%"
+                    android:text="Reduces irrigation water use by up to 30%."
                     android:textColor="#2E6B15" />
             </LinearLayout>
 
@@ -447,7 +447,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginRight="16dp"
                     android:layout_marginBottom="8dp"
-                    android:text="Encourages deeper root growth and better nutrient uptake"
+                    android:text="Encourages deeper root growth and better nutrient uptake."
                     android:textColor="#2E6B15" />
 
             </LinearLayout>
@@ -469,7 +469,7 @@
                     android:layout_marginLeft="16dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginRight="16dp"
-                    android:text="Reduced Mehane Emissions"
+                    android:text="Reduced Methane Emissions"
                     android:textColor="#0D522C"
                     android:textSize="20sp"
                     android:textStyle="bold" />
