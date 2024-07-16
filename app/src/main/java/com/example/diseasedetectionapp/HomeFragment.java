@@ -126,7 +126,7 @@ public class HomeFragment extends Fragment {
         String activeProfile = sharedPreferences.getString(KEY_ACTIVE_PROFILE, "");
 
         MediaController mediaController = new MediaController(getContext());
-        videoView.setVideoURI(Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.sample));
+        videoView.setVideoURI(Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.pal_eye));
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {

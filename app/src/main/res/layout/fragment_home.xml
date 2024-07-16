@@ -62,7 +62,7 @@
                     android:contentDescription="App Icon"
                     android:layout_width="84dp"
                     android:layout_height="73dp"
-                    android:src="@drawable/palaycheck_icon" />
+                    android:src="@drawable/pal_eye_icon" />
 
             </LinearLayout>
 
@@ -222,7 +222,7 @@
                     android:id="@+id/video"
                     android:layout_width="match_parent"
                     android:layout_gravity="center"
-                    android:layout_height="200dp">
+                    android:layout_height="216dp">
 
                 </VideoView>
 
