@@ -8,6 +8,7 @@
     tools:context=".HomeFragment">
 <FrameLayout
     android:layout_width="match_parent"
+    android:id="@+id/frame_layout"
     android:layout_height="match_parent"
     android:fontFamily="@font/poppins"
     >
@@ -215,16 +216,15 @@
 <!-- Video player-->
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent">
 
-
-                <VideoView
+                <WebView
                     android:id="@+id/video"
                     android:layout_width="match_parent"
                     android:layout_gravity="center"
-                    android:layout_height="216dp">
+                    android:layout_height="216sp">
 
-                </VideoView>
+                </WebView>
 
             </FrameLayout>
 
@@ -529,4 +529,5 @@
         app:headerLayout="@layout/nav_header"
         >
     </com.google.android.material.navigation.NavigationView>
+
 </androidx.drawerlayout.widget.DrawerLayout>

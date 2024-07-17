@@ -33,6 +33,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.MediaController;
@@ -63,8 +68,9 @@ public class HomeFragment extends Fragment {
     TextView waterStatus;
     TextView soilStatus;
     ImageView appIcon;
-    VideoView videoView;
+    WebView webView;
     NavigationView navigationView;
+    WebChromeClient.CustomViewCallback customViewCallback;
     List<String> profiles = new ArrayList<>();
     DrawerLayout drawerLayout;
     SharedPreferences sharedPreferences;
@@ -121,17 +127,31 @@ public class HomeFragment extends Fragment {
         navigationView = view.findViewById(R.id.navigation_view);
         drawerLayout = view.findViewById(R.id.drawer_layout);
         appIcon = view.findViewById(R.id.appIcon);
-        videoView = view.findViewById(R.id.video);
+        webView = view.findViewById(R.id.video);
         sharedPreferences = getActivity().getSharedPreferences(MainActivity.SHARED_PREF_NAME, Context.MODE_PRIVATE);
         String activeProfile = sharedPreferences.getString(KEY_ACTIVE_PROFILE, "");
-
-        MediaController mediaController = new MediaController(getContext());
-        videoView.setVideoURI(Uri.parse("android.resource://" + getActivity().getPackageName() + "/" + R.raw.pal_eye));
-        videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+        String videoUrl = "<iframe width=\"100%\" height=\"100%\" src=\"https://www.youtube.com/embed/eH-0roQEXA0?si=7EsyJlZuDA-p4Skj\" title=\"YouTube video player\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen></iframe>";
+        webView.loadData(videoUrl, "text/html", "UTF-8");
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.setWebViewClient(new WebViewClient());
+        webView.setWebChromeClient(new WebChromeClient() {
+            View fullscreen = null;
             @Override
-            public void onPrepared(MediaPlayer mp) {
-                mediaController.setAnchorView(videoView);
-                videoView.setMediaController(mediaController);
+            public void onShowCustomView(View view, CustomViewCallback callback) {
+               webView.setVisibility(View.GONE);
+
+               if (fullscreen != null) {
+                   ((FrameLayout)getActivity().getWindow().getDecorView()).removeView(fullscreen);
+               }
+               fullscreen = view;
+               ((FrameLayout)getActivity().getWindow().getDecorView()).addView(fullscreen, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+               fullscreen.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onHideCustomView() {
+                fullscreen.setVisibility(View.GONE);
+                webView.setVisibility(View.VISIBLE);
             }
         });
         if(activeProfile.isEmpty()) {
